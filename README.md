@@ -12,8 +12,8 @@ par qui et dans quelles conditions, puis conditionne l'usage du modèle à cette
 | `anchoring/` | interface `LedgerClient`, registre local chaîné par hachage, agent d'ancrage (outbox SQLite) | **testé** |
 | `federation/` | fédération simulée (NumPy), moyenne pondérée, Multi-Krum, attaques, stockage hors chaîne | **testé** |
 | `services/` | porte de certification, diagnostic + explication, vérification d'explication | **testé** |
-| `scenarios/`, `tests/` | les 5 scénarios du sujet + tests unitaires (21 tests) | **passent** |
-| `ui/` | génération d'une page HTML d'audit (arbre de provenance) | **testé** (démo) |
+| `scenarios/`, `tests/` | les 5 scénarios du sujet + tests unitaires (25 tests) | **passent** |
+| `ui/` | **Console web interactive** (serveur Python + page unique, sans dépendance) et page HTML d'audit statique | **testé** (API + captures) |
 | `measures/` | benchmark A/B/C, taille de modèle, provenance → `results.csv` | **exécuté** |
 | `chaincode/` | chaincode Go pour Hyperledger Fabric (mêmes règles que le registre local) | **non compilé** ici (pas d'accès réseau) : syntaxe formatée, à compiler et tester |
 | `infra/` | Docker Compose MinIO + PostgreSQL | non lancé ici |
@@ -33,8 +33,9 @@ par qui et dans quelles conditions, puis conditionne l'usage du modèle à cette
 
 ```bash
 pip install -r requirements.txt     # numpy + pytest suffisent
-python3 -m pytest -q                # 21 tests, dont les 5 scénarios
+python3 -m pytest -q                # 25 tests, dont les 5 scénarios et l'API de la console
 python3 demo.py examples            # fédération 3 cliniques x 5 rounds -> examples/audit.html
+python -m ui.server                 # console web : http://127.0.0.1:8000 (Windows : python -m ui.server)
 python3 -m measures.benchmark 5     # -> measures/results.csv
 ```
 
@@ -56,3 +57,12 @@ python3 -m measures.benchmark 5     # -> measures/results.csv
   est constant quand la taille du modèle passe de 9 à 8 193 paramètres.
 - Multi-Krum exige n ≥ 2f+3 : avec 3 cliniques, aucune tolérance ; d'où 5 cliniques pour le scénario 4.
 - La blockchain prouve la cohérence du processus, pas la qualité médicale du modèle.
+
+## Console web (`python -m ui.server`)
+
+Sept onglets : tableau de bord (précision par round, rounds, cliniques écartées), fédération (relancer avec
+stratégie, ancrage A/B/C, clinique malveillante), registre (blocs chaînés, altération d'un bloc, coupure du
+registre, file de reprise, révocation d'un modèle), arbre de provenance cliquable, diagnostic (porte de
+certification, contributions des caractéristiques, falsification et vérification de l'explication),
+les 5 scénarios exécutés en direct, et les mesures. Thème clair/sombre. Option `--no-browser` pour ne pas
+ouvrir le navigateur ; `python -m ui.server 9000` pour changer de port.

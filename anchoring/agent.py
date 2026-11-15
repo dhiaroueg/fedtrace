@@ -13,7 +13,7 @@ _KINDS = {"contribution": "anchor_contribution", "model": "anchor_model", "decis
 class AnchoringAgent:
     def __init__(self, ledger: LedgerClient, db_path: str = ":memory:"):
         self.ledger = ledger
-        self.db = sqlite3.connect(db_path)
+        self.db = sqlite3.connect(db_path, check_same_thread=False)  # accès sérialisé par l'appelant (serveur UI)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute(
             "CREATE TABLE IF NOT EXISTS outbox("
