@@ -1,0 +1,12 @@
+# Cœur du prototype (testé) :
+numpy
+pytest
+# Pile cible (voir docs, §7) — à installer pour la version Flower/PyTorch, versions à figer :
+# flwr
+# torch
+# opacus
+# captum
+# fastapi
+# uvicorn
+# minio
+# psycopg[binary]

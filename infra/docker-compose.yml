@@ -1,0 +1,20 @@
+# Stockage hors chaîne (MinIO + PostgreSQL). Le réseau Fabric se lance séparément (voir README).
+# Remplacer les mots de passe par des secrets : ne jamais committer de vrais identifiants.
+services:
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-fedtrace}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:?définir MINIO_PASSWORD}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio-data:/data"]
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${PG_USER:-fedtrace}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?définir PG_PASSWORD}
+      POSTGRES_DB: fedtrace
+    ports: ["5432:5432"]
+    volumes: ["pg-data:/var/lib/postgresql/data"]
+volumes: {minio-data: {}, pg-data: {}}
